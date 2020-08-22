@@ -7,7 +7,7 @@ public abstract class ScriptLibrary {
 	protected DataProvider dataProvider;
 	protected Router router;
 	protected AutoDriver driver;
-
+    protected AutoReport result;
 	
 
 	/**
@@ -20,6 +20,7 @@ public abstract class ScriptLibrary {
 		this.router=router;
 		this.dataProvider = router.getDataProvider();
 		this.driver=router.getAutoDriver();
+		this.result=router.getResult();
 	}
 	
 	

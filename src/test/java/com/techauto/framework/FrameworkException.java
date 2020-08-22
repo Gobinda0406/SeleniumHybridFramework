@@ -2,6 +2,8 @@ package com.techauto.framework;
 
 @SuppressWarnings("serial")
 public class FrameworkException extends RuntimeException {
+	
+	private ReportSetup reportsetup=ReportSetup.getInstance();
 	/**
 	 * The step name to be specified for the exception
 	 */
@@ -14,6 +16,7 @@ public class FrameworkException extends RuntimeException {
 	 */
 	public FrameworkException(String errorDescription) {
 		super(errorDescription);
+		reportsetup.tearDown();
 	}
 	
 	/**
@@ -24,6 +27,7 @@ public class FrameworkException extends RuntimeException {
 	public FrameworkException(String errorName, String errorDescription) {
 		super(errorDescription);
 		this.errorName = errorName;
+		reportsetup.tearDown();
 	}
 
 	public String getErrorName() {

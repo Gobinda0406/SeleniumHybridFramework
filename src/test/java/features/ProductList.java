@@ -1,7 +1,6 @@
 package features;
 
 import com.techauto.framework.Router;
-import com.techauto.framework.ScriptLibrary;
 
 import uimap.UiLocators;
 
@@ -13,7 +12,7 @@ import uimap.UiLocators;
  * @author Computer
  * 
  */
-public class ProductList extends ScriptLibrary {
+public class ProductList extends BaseFeature {
 
 	public ProductList(Router router) {
 		super(router);
@@ -22,12 +21,12 @@ public class ProductList extends ScriptLibrary {
 	public void clickTodaysDeal() {
 
 		try {
+
 			driver.findElement(UiLocators.CLICK_TODAYS_DEAL).click();
-			System.out.println("Pass-clickTodaysDeal");
-			// Here we have to call the report. Implementation is in progress
+			result.updateReport("Click on Deal is successful", "Pass");
 		} catch (Exception e) {
-			System.out.println("Fail-clickTodaysDeal");
-			// Here we have to call the report. Implementation is in progress
+			result.updateReport("Click on Deal is unsuccessful", "Fail");
+
 		}
 	}
 
@@ -37,16 +36,12 @@ public class ProductList extends ScriptLibrary {
 			String text = driver.findElement(UiLocators.TODAYSDEAL_TEXT).getText();
 
 			if (text.trim().equals(dataProvider.getData("Test_Data", "DealText"))) {
-				System.out.println("Pass-todaysDeal");
-				// Here we have to call the report. Implementation is in
-				// progress
+				result.updateReport("Validate Deal is successful", "Pass");
 			} else {
-				System.out.println("Fail-todaysDeal");
-				// Here we have to call the report. Implementation is in
-				// progress
+				result.updateReport("Validate Deal is unsuccessful", "fail");
 			}
 		} catch (Exception e) {
-			System.out.println("Exception in -todaysDeal >> "+e.toString());
+			System.out.println("Exception in -todaysDeal >> " + e.toString());
 		}
 	}
 }

@@ -3,7 +3,6 @@ package testscripts;
 import org.openqa.selenium.WebDriver;
 
 import com.techauto.framework.Router;
-import com.techauto.framework.ScriptLibrary;
 
 /**
  * Class contains reuse method used by feature classes. Reuse method is declared
@@ -12,7 +11,7 @@ import com.techauto.framework.ScriptLibrary;
  * @author Computer
  * 
  */
-public class ReuseCode extends ScriptLibrary {
+public class ReuseCode extends BaseTestScripts {
 
 	public ReuseCode(Router router) {
 		super(router);

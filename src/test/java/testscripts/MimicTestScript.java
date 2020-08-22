@@ -1,7 +1,6 @@
 package testscripts;
 
 import com.techauto.framework.Router;
-import com.techauto.framework.ScriptLibrary;
 
 import features.ProductList;
 import features.Search;
@@ -14,7 +13,7 @@ import features.Search;
  * @author Computer
  * 
  */
-public class MimicTestScript extends ScriptLibrary {
+public class MimicTestScript extends BaseTestScripts {
 
 	public MimicTestScript(Router router) {
 		super(router);
@@ -28,12 +27,19 @@ public class MimicTestScript extends ScriptLibrary {
 		Search search = new Search(router);
 		search.search();
 	}
+	
+	public void searchItemP() {
+		Search search = new Search(router);
+		search.searchI();
+	}
+
 
 	public void validateDeal() {
 
 		ProductList prodlist = new ProductList(router);
 		prodlist.clickTodaysDeal();
 		prodlist.validateTodaysDeal();
+		//result.updateReport(expectedResult, status);
 
 	}
 

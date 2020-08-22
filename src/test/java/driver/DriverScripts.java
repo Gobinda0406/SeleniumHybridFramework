@@ -10,15 +10,17 @@ import java.util.regex.Pattern;
 
 import org.openqa.selenium.WebDriver;
 
+import com.techauto.framework.AutoReport;
 import com.techauto.framework.Browser;
 import com.techauto.framework.DataProvider;
 import com.techauto.framework.ExecutionMode;
 import com.techauto.framework.FrameworkException;
 import com.techauto.framework.FrameworkSettings;
 import com.techauto.framework.GlobalParameters;
+import com.techauto.framework.ReportSetup;
+import com.techauto.framework.ReportSummary;
 import com.techauto.framework.Router;
 import com.techauto.framework.Utility;
-import com.techauto.framework.model.ConfigLookup;
 import com.techauto.framework.model.TestParameters;
 import com.techauto.framework.model.TestScripts;
 
@@ -26,6 +28,8 @@ public class DriverScripts {
 
 	private final TestParameters testConfiguration;
 	private final List<TestScripts> testScripts;
+	private AutoReport autoReport;
+	private ReportSummary reportSummary;
 	private GlobalParameters globalParameters = GlobalParameters.getInstance();
 	private Router route;
 	private DataProvider dataProvider;
@@ -40,7 +44,8 @@ public class DriverScripts {
 	 * @param {@link
 	 * 			ConfigLookup} object
 	 */
-	public DriverScripts(TestParameters testConfiguration, List<TestScripts> testScripts) {
+	public DriverScripts(ReportSetup reportsetup,TestParameters testConfiguration, List<TestScripts> testScripts) {
+		this.reportSummary=reportsetup.getReportSummary();
 		this.testConfiguration = testConfiguration;
 		this.testScripts = testScripts;
 	}
@@ -50,9 +55,12 @@ public class DriverScripts {
 	 */
 	public void driveTestExecution() {
 		startUp();
+		//intializeTestReport();
 		initializeWebDriver();
+		intializeTestReport();
 		initializeTestScripts();
 		quitWebDriver();
+		exitTestReport();
 
 	}
 
@@ -62,21 +70,21 @@ public class DriverScripts {
 	}
 
 	private void defaultSetup() {
-		if (testConfiguration.getConfigLookup().getExecutionMode() == null) {
-			testConfiguration.getConfigLookup()
+		if (globalParameters.getExecutionMode() == null) {
+			globalParameters
 					.setExecutionMode(ExecutionMode.valueOf(properties.getProperty("DefaultExecutionMode")));
 		}
-		if (testConfiguration.getConfigLookup().getBrowser() == null) {
-			testConfiguration.getConfigLookup().setBrowser(Browser.valueOf(properties.getProperty("DefaultBrowser")));
+		if (globalParameters.getBrowser() == null) {
+			globalParameters.setBrowser(Browser.valueOf(properties.getProperty("DefaultBrowser")));
 		}
 	}
 
 	private void initializeWebDriver() {
 
-		switch (testConfiguration.getConfigLookup().getExecutionMode()) {
+		switch (globalParameters.getExecutionMode()) {
 
 		case LOCAL:
-			WebDriver webDriver = WebDriverFactory.getWebDriver(testConfiguration.getConfigLookup().getBrowser());
+			WebDriver webDriver = WebDriverFactory.getWebDriver(globalParameters.getBrowser());
 			driver = new AutoDriver(webDriver);
 			wd = webDriver;
 			driver.setTestConfiguration(testConfiguration);
@@ -94,6 +102,16 @@ public class DriverScripts {
 
 		}
 
+	}
+	
+	public void intializeTestReport(){
+		autoReport=new AutoReport(reportSummary,wd);
+		autoReport.updateReportSummary(testConfiguration.getTestCaseId(), testConfiguration.getTestCaseName());
+		
+	}
+	public void exitTestReport(){
+	 autoReport.endReportSummary();
+		
 	}
 
 	private String initializeDataProvider(String eachTestAction) {
@@ -117,7 +135,7 @@ public class DriverScripts {
 				dataProvider.setIteration(1, subIteration);
 			}
 		
-			route = new Router(dataProvider, driver);
+			route = new Router(autoReport,dataProvider, driver);
 
 		} catch (Exception e) {
 			throw new FrameworkException(
@@ -202,7 +220,7 @@ public class DriverScripts {
 	}
 
 	private void quitWebDriver() {
-		switch (testConfiguration.getConfigLookup().getExecutionMode()) {
+		switch (globalParameters.getExecutionMode()) {
 
 		case LOCAL:
 			wd.quit();

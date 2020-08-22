@@ -4,8 +4,11 @@ package com.techauto.framework;
 public class GlobalParameters {
 	
 	private String relativePath;
+	private String reportFolderPath;
 	private String runSuite;
 	private boolean stopExecution = false;
+	private ExecutionMode ExecutionMode;
+	private Browser Browser;
 	
 	private static final GlobalParameters GLOBAL_PARAMETERS = new GlobalParameters();
 
@@ -78,6 +81,52 @@ public class GlobalParameters {
 		this.stopExecution = stopExecution;
 	}
 
+	/**
+	 * @return the reportFolderPath
+	 */
+	public String getReportFolderPath() {
+		return reportFolderPath;
+	}
+
+	/**
+	 * @param reportFolderPath the reportFolderPath to set
+	 */
+	public void setReportFolderPath(String reportFolderPath) {
+		this.reportFolderPath = reportFolderPath;
+	}
+
+	/**
+	 * @return the executionMode
+	 */
+	public ExecutionMode getExecutionMode() {
+		return ExecutionMode;
+	}
+
+	/**
+	 * @param executionMode the executionMode to set
+	 */
+	public void setExecutionMode(ExecutionMode executionMode) {
+		ExecutionMode = executionMode;
+	}
+
+	/**
+	 * @return the browser
+	 */
+	public Browser getBrowser() {
+		return Browser;
+	}
+
+	/**
+	 * @param browser the browser to set
+	 */
+	public void setBrowser(Browser browser) {
+		Browser = browser;
+	}
+
+	
+
+	
+    
 	
 	
 }

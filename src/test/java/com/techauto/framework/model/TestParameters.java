@@ -13,7 +13,7 @@ public class TestParameters {
 	private String module;
 	private String testCaseName;
 	private String description;
-	private ConfigLookup configLookup;
+	//private ConfigLookup configLookup;
 	
 	/**
 	 * Constructor to allow external instanciation to create object {@link TestParameters}
@@ -86,19 +86,7 @@ public class TestParameters {
 		this.description = description;
 	}
 
-	/**
-	 * @return the configLookup
-	 */
-	public ConfigLookup getConfigLookup() {
-		return configLookup;
-	}
-
-	/**
-	 * @param configLookup the configLookup to set
-	 */
-	public void setConfigLookup(ConfigLookup configLookup) {
-		this.configLookup = configLookup;
-	}
+	
 
 	
 

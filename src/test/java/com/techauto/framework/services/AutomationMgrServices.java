@@ -8,16 +8,22 @@ import java.util.Properties;
 import com.techauto.framework.Browser;
 import com.techauto.framework.ExecutionMode;
 import com.techauto.framework.FrameworkException;
+import com.techauto.framework.FrameworkSettings;
 import com.techauto.framework.GlobalParameters;
 import com.techauto.framework.Utility;
 import com.techauto.framework.dao.ExcelAccess;
-import com.techauto.framework.model.ConfigLookup;
 import com.techauto.framework.model.TestParameters;
 import com.techauto.framework.model.TestScripts;
 
 public class AutomationMgrServices {
-
-	public List<TestParameters> getRunInfo(GlobalParameters globalParameters, Properties properties) {
+	
+	private GlobalParameters globalParameters = GlobalParameters.getInstance();
+	private Properties properties = FrameworkSettings.getInstance();
+	
+	public List<TestParameters> getRunInfo() {
+		
+		setupExecutionMode();
+		
 		String sheetName = globalParameters.getRunSuite();
 		ExcelAccess runManagerAccess = new ExcelAccess(globalParameters.getRelativePath() + Utility.getFileSeperator()
 				+ "src" + Utility.getFileSeperator() + "test" + Utility.getFileSeperator() + "resources",
@@ -25,7 +31,7 @@ public class AutomationMgrServices {
 		runManagerAccess.setDataSheetName(sheetName);
 
 		List<TestParameters> testInstancesToRun = new ArrayList<TestParameters>();
-		String[] keys = { "Run", "Module", "TestCaseId", "TestCaseName", "Description", "ConfigurationId" };
+		String[] keys = { "Run", "Module", "TestCaseId", "TestCaseName", "Description"};
 		List<Map<String, String>> values = runManagerAccess.getValues(keys);
 
 		for (int currentTestInstance = 0; currentTestInstance < values.size(); currentTestInstance++) {
@@ -42,14 +48,6 @@ public class AutomationMgrServices {
 				testParameters.setTestCaseName(row.get("TestCaseName"));
 				testParameters.setDescription(row.get("Description"));
 
-				// Need Modification Here
-				String testConfig = row.get("ConfigurationId");
-				if (!"".equals(testConfig)) {
-					ConfigLookup configLookup = new ConfigLookup(testConfig);
-					ConfigLookup configItem = getTestConfigValues(runManagerAccess, "ConfigLookup", testConfig,
-							configLookup, properties);
-					testParameters.setConfigLookup(configItem);
-				}
 
 				testInstancesToRun.add(testParameters);
 				runManagerAccess.setDataSheetName(sheetName);
@@ -58,35 +56,19 @@ public class AutomationMgrServices {
 		return testInstancesToRun;
 	}
 
-	private ConfigLookup getTestConfigValues(ExcelAccess runManagerAccess, String sheetName, String testConfigName,
-			ConfigLookup configLookup, Properties properties) {
-
-		runManagerAccess.setDataSheetName(sheetName);
-		int rowNum = runManagerAccess.getRowNum(testConfigName, 0, 1);
-
-		String[] keys = { "ConfigurationId", "ExecutionMode", "ToolName", "Browser", "BrowserVersion" };
-		Map<String, String> values = runManagerAccess.getValuesForSpecificRow(keys, rowNum);
-
-		String executionMode = values.get("ExecutionMode");
+	private void setupExecutionMode() {
+		
+		String executionMode = properties.getProperty("ExecutionMode");
+		
 		if (!"".equals(executionMode)) {
-			configLookup.setExecutionMode(ExecutionMode.valueOf(executionMode));
-		} else {
-			// testParameters.setExecutionMode(ExecutionMode.valueOf(properties.getProperty("DefaultExecutionMode")));
-		}
+			globalParameters.setExecutionMode(ExecutionMode.valueOf(executionMode));
+		} 
 
-		String browser = values.get("Browser");
+		String browser = properties.getProperty("Browser");
 		if (!"".equals(browser)) {
-			configLookup.setBrowser(Browser.valueOf(browser));
-		} else {
-			configLookup.setBrowser(Browser.valueOf(properties.getProperty("DefaultBrowser")));
-		}
+			globalParameters.setBrowser(Browser.valueOf(browser));
+		} 
 
-		String browserVersion = values.get("BrowserVersion");
-		if (!"".equals(browserVersion)) {
-			configLookup.setBrowserVersion(browserVersion);
-		}
-
-		return configLookup;
 	}
 
 	// Get List of Test Script Keyword

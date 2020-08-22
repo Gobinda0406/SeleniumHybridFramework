@@ -1,12 +1,12 @@
 package launcher;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
 import com.techauto.framework.FrameworkSettings;
 import com.techauto.framework.GlobalParameters;
+import com.techauto.framework.ReportSetup;
 import com.techauto.framework.model.TestParameters;
 import com.techauto.framework.model.TestScripts;
 import com.techauto.framework.services.AutomationMgrServices;
@@ -18,14 +18,17 @@ public class AutoPilot {
 	private Properties properties = FrameworkSettings.getInstance();
 	private GlobalParameters globalParameters = GlobalParameters.getInstance();
 	private AutomationMgrServices automationManagerServices = new AutomationMgrServices();
-
+	private ReportSetup reportsetup=ReportSetup.getInstance();
+	
 	public static void main(String[] args) {
 		AutoPilot launch = new AutoPilot();
 		launch.startBatchExecution();
 	}
 
 	private void startBatchExecution() {
-		setRelativePath();
+		reportsetup.setRelativePath();
+		reportsetup.setResultPath();
+		
 
 		String suiteName;
 		if (System.getProperty("RunWorksheet") != null) {
@@ -36,6 +39,8 @@ public class AutoPilot {
 		globalParameters.setRunSuite(suiteName);
 
 		execute();
+		reportsetup.tearDown();
+		reportsetup.generateReport();
 	}
 
 	/**
@@ -46,7 +51,7 @@ public class AutoPilot {
 
 		// AutomationManagerServices Object call getRunInfo Method to filter out
 		// testcases marked as "Y"
-		List<TestParameters> testInstances = automationManagerServices.getRunInfo(globalParameters, properties);
+		List<TestParameters> testInstances = automationManagerServices.getRunInfo();
 		List<TestScripts> testScripts = new ArrayList<TestScripts>();
 
 		for (int currentTestInstance = 0; currentTestInstance < testInstances.size(); currentTestInstance++) {
@@ -57,23 +62,16 @@ public class AutoPilot {
 		}
 
 		for (int currentTestInstance = 0; currentTestInstance < testInstances.size(); currentTestInstance++) {
-			DriverScripts driverScript = new DriverScripts(testInstances.get(currentTestInstance), testScripts);
+			
+			reportsetup.setReportSummary();
+			DriverScripts driverScript = new DriverScripts(reportsetup,testInstances.get(currentTestInstance), testScripts);
 			driverScript.driveTestExecution();
-			System.out.println("*********************Test Suite Run done***************************");
+			reportsetup.addToResultSet();
+			
 		}
+		
+	
 	}
 
-	/**
-	 * 
-	 * Convinient Methods
-	 * 
-	 */
-	private void setRelativePath() {
-		String encryptedPath = System.getProperty("user.dir");
-		String relativePath = new File(encryptedPath).getAbsolutePath();
-		if (relativePath.contains("supportlibraries")) {
-			relativePath = new File(encryptedPath).getParent();
-		}
-		globalParameters.setRelativePath(relativePath);
-	}
+	
 }

@@ -6,10 +6,13 @@ import driver.AutoDriver;
 public class Router {
 	
 	private final DataProvider dataProvider;
+	private AutoReport result;
 	private AutoDriver autoDriver;
 
 	
-	public Router(DataProvider dataProvider,AutoDriver autoDriver){
+	public Router(AutoReport result,DataProvider dataProvider,AutoDriver autoDriver){
+		
+		this.result=result;
 		this.dataProvider=dataProvider;	
 		this.autoDriver=autoDriver;
 
@@ -34,6 +37,12 @@ public class Router {
 	}
 
 
+	/**
+	 * @return the result
+	 */
+	public AutoReport getResult() {
+		return result;
+	}
 
 	
 	
